@@ -12,8 +12,8 @@ class Crosswalk(Base):
     def limit(self, max_rows):
         return self.create({'limit': max_rows})
 
-    def only(self, args):
-        return self.create({'only': args})
+    def only(self, namespaces):
+        return self.create({'only': namespaces})
 
     def include_count(self, include):
         return self.create({'include_count': include})

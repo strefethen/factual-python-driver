@@ -6,8 +6,8 @@ class Resolve(Base):
         self.action = 'resolve'
         Base.__init__(self, api, params)
 
-    def values(self, args):
-        return self.create({'values': args})
+    def values(self, values):
+        return self.create({'values': values})
 
     def include_count(self, include):
         return self.create({'include_count': include})

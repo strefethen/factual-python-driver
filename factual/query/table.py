@@ -4,33 +4,48 @@ Factual table api query
 
 from base import Base
 
+DEFAULT_LIMIT = 20
+
 class Table(Base):
     def __init__(self, api, path, params={}):
         self.path = path
         self.action = 'read'
         Base.__init__(self, api, params)
 
-    def search(self, args):
-        return self.create({'q': args})
+    def search(self, terms):
+        return self.create({'q': terms})
 
-    def filters(self, args):
-        return self.create({'filters': args})
+    def filters(self, filters):
+        return self.create({'filters': filters})
 
     def include_count(self, include):
         return self.create({'include_count': include})
 
-    def geo(self, args):
-        return self.create({'geo': args})
+    def geo(self, geo_filter):
+        return self.create({'geo': geo_filter})
 
     def limit(self, max_rows):
         return self.create({'limit': max_rows})
 
-    def select(self, args):
-        return self.create({'select': args})
+    def select(self, fields):
+        return self.create({'select': fields})
 
-    # TODO refactor for easier asc/desc (per field, too?)
-    def sort(self, args):
-        return self.create({'sort': args})
+    def sort(self, sort_params):
+        return self.create({'sort': sort_params})
+
+    def offset(self, offset):
+        return self.create({'offset': offset})
+
+    def page(self, page_num, limit=DEFAULT_LIMIT):
+        limit = DEFAULT_LIMIT if limit < 1 else limit
+        page_num = 1 if page_num < 1 else page_num
+        return self.offset((page_num - 1) * limit).limit(limit)
+
+    def sort_asc(self, fields):
+        return self.sort(",".join([f + ":asc" for f in fields]))
+
+    def sort_desc(self, fields):
+        return self.sort(",".join([f + ":desc" for f in fields]))
 
     def create(self, params):
         return Table(self.api, self.path, self.merge_params(params))
