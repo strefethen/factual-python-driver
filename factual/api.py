@@ -2,9 +2,12 @@
 Factual API driver
 """
 
-import requests
 import json
+from urllib import urlencode
+
+import requests
 from oauth_hook import OAuthHook
+
 from query import Crosswalk, Resolve, Table
 
 API_V3_HOST        = "http://api.v3.factual.com"
@@ -60,8 +63,6 @@ class Factual(object):
         def _make_query_string(self, params):
             string_params = []
             for key, val in params.items():
-                encoded = json.dumps(val) if not isinstance(val, basestring) else val
-                # TODO this should be removed when we start using request params directly
-                encoded = encoded.replace('&', '%26')
-                string_params.append(key + "=" + encoded)
-            return "&".join(string_params)
+                transformed = json.dumps(val) if not isinstance(val, str) else val
+                string_params.append((key, transformed))
+            return urlencode(string_params)
