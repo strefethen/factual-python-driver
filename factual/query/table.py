@@ -9,6 +9,7 @@ DEFAULT_LIMIT = 20
 class Table(Base):
     def __init__(self, api, path, params={}):
         self.path = path
+        self.cached_schema = None
         Base.__init__(self, api, params)
 
     def search(self, terms):
@@ -45,6 +46,11 @@ class Table(Base):
 
     def sort_desc(self, fields):
         return self.sort(",".join([f + ":desc" for f in fields]))
+
+    def schema(self):
+        if not self.cached_schema:
+            self.cached_schema = self.api.schema(self)
+        return self.cached_schema
 
     def _copy(self, params):
         return Table(self.api, self.path, self.merge_params(params))

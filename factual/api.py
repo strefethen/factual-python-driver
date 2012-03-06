@@ -41,9 +41,12 @@ class API(object):
         response = self._handle_request(query.path, query.params)
         return response
         
-    # TODO - return schema
-    def schema(query):
-        pass    
+    def schema(self, query):
+        # TODO The API doesn't like extra parameters in the schema request,
+        # so we're just using an empty params dict here.  Should we warn the
+        # user instead if they try to make a request with parameters?
+        response = self._handle_request(query.path + "/schema", {})
+        return response['view']
 
     def _handle_request(self, path, params):
         response = self._make_request(path, params)

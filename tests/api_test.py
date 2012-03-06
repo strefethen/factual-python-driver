@@ -55,6 +55,12 @@ class FactualAPITestSuite(unittest.TestCase):
         self.assertTrue(row['resolved'])
         self.assertEqual('1801 Avenue Of The Stars', row['address'])
 
+    def test_schema(self):
+        schema = self.places.schema()
+        self.assertEqual(21, len(schema['fields']))
+        self.assertTrue('title' in schema)
+        self.assertTrue('locality' in set(f['name'] for f in schema['fields']))
+
 
 if __name__ == '__main__':
     unittest.main()
