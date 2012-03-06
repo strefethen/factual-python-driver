@@ -20,5 +20,6 @@ class Base(object):
         return self.response
 
     def merge_params(self, params):
-        params.update(self.params)
-        return params
+        new_params = self.params.copy()
+        new_params.update(params)
+        return new_params
