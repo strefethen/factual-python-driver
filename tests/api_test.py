@@ -24,10 +24,10 @@ class FactualAPITestSuite(unittest.TestCase):
         self.assertEqual(2, len(row.keys()))
 
     def test_sort(self):
-        q1 = self.places.sort_asc(['name'])
+        q1 = self.places.sort_asc('name')
         self.assertTrue(q1.rows()[0]['name'] < q1.rows()[1]['name'])
 
-        q2 = self.places.sort_desc(['name'])
+        q2 = self.places.sort_desc('name')
         self.assertTrue(q2.rows()[0]['name'] > q2.rows()[1]['name'])
 
     def test_paging(self):

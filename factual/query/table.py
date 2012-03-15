@@ -41,11 +41,11 @@ class Table(Base):
         page_num = 1 if page_num < 1 else page_num
         return self.offset((page_num - 1) * limit).limit(limit)
 
-    def sort_asc(self, fields):
-        return self.sort(",".join([f + ":asc" for f in fields]))
+    def sort_asc(self, *args):
+        return self.sort(",".join(field + ":asc" for field in args))
 
-    def sort_desc(self, fields):
-        return self.sort(",".join([f + ":desc" for f in fields]))
+    def sort_desc(self, *args):
+        return self.sort(",".join(field + ":desc" for field in args))
 
     def schema(self):
         if not self.cached_schema:
