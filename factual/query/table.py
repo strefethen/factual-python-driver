@@ -42,10 +42,10 @@ class Table(Base):
         return self.offset((page_num - 1) * limit).limit(limit)
 
     def sort_asc(self, *args):
-        return self.sort(",".join(field + ":asc" for field in args))
+        return self.sort(','.join(field + ':asc' for field in args))
 
     def sort_desc(self, *args):
-        return self.sort(",".join(field + ":desc" for field in args))
+        return self.sort(','.join(field + ':desc' for field in args))
 
     def schema(self):
         if not self.cached_schema:

@@ -20,7 +20,7 @@ class Factual(object):
         self.api = API(self._generate_token(key, secret))
 
     def table(self, table):
-        return Table(self.api, "t/{0}".format(table))
+        return Table(self.api, 't/' + table)
 
     def crosswalk(self):
         return Crosswalk(self.api)
@@ -29,7 +29,7 @@ class Factual(object):
         return Resolve(self.api, values)
 
     def _generate_token(self, key, secret):
-        access_token = OAuthHook(consumer_key = key, consumer_secret = secret, header_auth=True)
+        access_token = OAuthHook(consumer_key=key, consumer_secret=secret, header_auth=True)
         return access_token
 
 
@@ -42,23 +42,21 @@ class API(object):
         return response
         
     def schema(self, query):
-        # TODO The API doesn't like extra parameters in the schema request,
-        # so we're just using an empty params dict here.  Should we warn the
-        # user instead if they try to make a request with parameters?
-        response = self._handle_request(query.path + "/schema", {})
+        response = self._handle_request(query.path + '/schema', query.params)
         return response['view']
 
     def _handle_request(self, path, params):
         response = self._make_request(path, params)
         payload = json.loads(response)
-        # TODO - Raise Error if payload['status'] != 'ok'
-        return payload["response"]
+        if payload['status'] != 'ok':
+            raise APIException(payload['error_type'] + ' - ' + payload['message'])
+        return payload['response']
         
     def _make_request(self, path, params):
-        # TODO a bug fix in requests-oauth should let us remove this
-        # manual query string generation and use params in request
-        url = API_V3_HOST + "/" + path + "?" + self._make_query_string(params)
-        headers = { "X-Factual-Lib" : DRIVER_VERSION_TAG }
+        # _make_query_string can be removed when when an issue in requests-oauth
+        # that drops params gets fixed
+        url = API_V3_HOST + '/' + path + '?' + self._make_query_string(params)
+        headers = {'X-Factual-Lib': DRIVER_VERSION_TAG}
         response = self.client.get(url, headers=headers)
         return response.text
 
@@ -68,3 +66,7 @@ class API(object):
             transformed = json.dumps(val) if not isinstance(val, str) else val
             string_params.append((key, transformed))
         return urlencode(string_params)
+
+
+class APIException(Exception):
+    pass
