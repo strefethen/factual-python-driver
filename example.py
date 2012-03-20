@@ -11,10 +11,10 @@ def main():
     table = factual.table('places')
     
     q1 = table.search("sushi Santa Monica")
-    print q1.rows()[0]
-
+    print q1.data()[1]
+    
     q2 = table.filters({'category': "Food & Beverage", 'region': "CA"}).limit(1)
-    print q2.rows()
+    print q2.data()
   
 if __name__ == '__main__':
   main()
