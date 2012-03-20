@@ -8,10 +8,10 @@ class Base(object):
         self.params = params
         self.response = None
 
-    def rows(self):
+    def data(self):
         return self.get_response()['data']
 
-    def total_rows(self):
+    def total_row_count(self):
         return self.get_response()['total_row_count']
 
     def get_response(self):
