@@ -45,6 +45,10 @@ class API(object):
         response = self._handle_request(query.path + '/schema', query.params)
         return response['view']
 
+    def build_url(self, path, params):
+        url = API_V3_HOST + '/' + path + '?' + self._make_query_string(params)
+        return url
+
     def _handle_request(self, path, params):
         response = self._make_request(path, params)
         payload = json.loads(response)
@@ -55,7 +59,7 @@ class API(object):
     def _make_request(self, path, params):
         # _make_query_string can be removed when when an issue in requests-oauth
         # that drops params gets fixed
-        url = API_V3_HOST + '/' + path + '?' + self._make_query_string(params)
+        url = self.build_url(path, params)
         headers = {'X-Factual-Lib': DRIVER_VERSION_TAG}
         response = self.client.get(url, headers=headers)
         return response.text

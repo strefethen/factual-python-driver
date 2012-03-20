@@ -14,6 +14,9 @@ class Base(object):
     def total_row_count(self):
         return self.get_response()['total_row_count']
 
+    def get_url(self):
+        return self.api.build_url(self.path, self.params)
+
     def get_response(self):
         if not self.response:
             self.response = self.api.execute(self)

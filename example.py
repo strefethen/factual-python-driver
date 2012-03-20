@@ -12,6 +12,7 @@ def main():
     
     q1 = table.search("sushi Santa Monica")
     print q1.data()[1]
+    print q1.get_url()
     
     q2 = table.filters({'category': "Food & Beverage", 'region': "CA"}).limit(1)
     print q2.data()
