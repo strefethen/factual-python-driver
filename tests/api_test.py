@@ -14,6 +14,12 @@ class FactualAPITestSuite(unittest.TestCase):
         row = q.data()[0]
         self.assertRegexpMatches(row['name'], 'Factual')
 
+    # full text search for "Mcdonald's, Santa Monica" (test spaces, commas, and apostrophes)
+    def test_search2(self):
+        q = self.places.search("McDonald's,Santa Monica").limit(20)
+        included_rows = q.included_rows()
+        self.assertEqual(20, included_rows)
+
     def test_limit(self):
         q = self.places.search('sushi').limit(3)
         self.assertEqual(3, len(q.data()))
@@ -60,6 +66,28 @@ class FactualAPITestSuite(unittest.TestCase):
         self.assertEqual(21, len(schema['fields']))
         self.assertTrue('title' in schema)
         self.assertTrue('locality' in set(f['name'] for f in schema['fields']))
+
+    # full text search for things where locality equals 大阪市 (Osaka: test unicode)
+    def test_unicode(self):
+        q = self.places.filters({'locality': '大阪市'})
+        for r in q.data():
+            self.assertEqual('大阪市', r['locality'])
+
+    def test_bw_encoding(self):
+        q = self.places.filters({'category': {"$bw":"Arts, Entertainment & Nightlife > Bars"}})
+        row = q.data()[0]
+        self.assertRegexpMatches(row['category'], "Arts, Entertainment & Nightlife > Bars")
+
+    def test_in(self):
+        q = self.places.filters({"locality":{"$in":["Santa Monica","Los Angeles","Culver City"]}})
+        row = q.data()[0]
+        self.assertIn(row['locality'], ["Santa Monica","Los Angeles","Culver City"])
+
+    def test_and(self):
+        q = self.places.filters({"$and":[{"country":"US"},{"website":{"$blank":"false"}}]})
+        row = q.data()[0]
+        self.assertEqual('US', row['country'])
+        self.assertRegexpMatches(row['website'], 'http')
 
 
 if __name__ == '__main__':
