@@ -19,6 +19,7 @@ This driver is supported via the [Factual Developer Group](https://groups.google
 
 ## Dependencies
 [Requests](http://docs.python-requests.org/en/v0.10.7/index.html)
+
 [requests-oauth](https://github.com/maraujop/requests-oauth)
 
 
@@ -40,7 +41,7 @@ Obtain an OAuth key and secret from [Factual](http://www.factual.com/devtools/be
 
 example.py is provided with the driver as a reference.
 
-To get started import the Factual python driver module and create a Factual object using your OAuth key and secret.
+To get started, import the Factual python driver module and create a Factual object using your OAuth key and secret.
 
 ````python
 from factual import *
@@ -61,9 +62,33 @@ factual.table("global").select("name,website").filters(
 	{"$and":[{"country":"TH"}, {"website":{"$blank":"false"}}]}).data()
 ````
 
-`````ruby
+`````python
 # Return highly rated U.S. restaurants in Los Angeles with WiFi
 factual.table("restaurants-us").filters(
   {"$and":[{"locality":"los angeles"},{"rating":{"$gte":4}},{"wifi":"true"}]}).data()
 ````
 
+
+## Simple Crosswalk Example
+
+````python
+# Concordance information of a place
+FACTUAL_ID = "110ace9f-80a7-47d3-9170-e9317624ebd9"
+query = factual.crosswalk().factual_id(FACTUAL_ID)
+query.data()
+````
+
+````python
+# Or specify a place with its namespace_id and namespace
+SIMPLEGEO_ID = "SG_6XIEi3qehN44LH8m8i86v0"
+query = factual.crosswalk().namespace('simplegeo',SIMPLEGEO_ID)
+query.data()
+````
+
+## Simple Resolve Example
+
+````python
+# Returns resolved entities as an array of hashes
+query = factual.resolve({"name":"McDonalds","address":"10451 Santa Monica Blvd","region":"CA","postcode":"90025"})
+query.data()[1]["resolved"]  # true or false
+query.data()
