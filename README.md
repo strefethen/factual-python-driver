@@ -92,3 +92,7 @@ query.data()
 query = factual.resolve({"name":"McDonalds","address":"10451 Santa Monica Blvd","region":"CA","postcode":"90025"})
 query.data()[1]["resolved"]  # true or false
 query.data()
+
+
+## Full Documentation
+Full documentation is available at http://developer.factual.com
