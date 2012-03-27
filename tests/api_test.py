@@ -1,3 +1,4 @@
+import json
 import unittest
 
 from factual import Factual
@@ -88,6 +89,14 @@ class FactualAPITestSuite(unittest.TestCase):
         row = q.data()[0]
         self.assertEqual('US', row['country'])
         self.assertRegexpMatches(row['website'], 'http')
+
+    def test_raw_read(self):
+        # filters here is url encoded {"name":"Starbucks"}
+        response = self.factual.raw_read('t/places/read', 'limit=15&filters=%7B%22name%22%3A%22Starbucks%22%7D')
+        payload = json.loads(response)
+        data = payload['response']['data']
+        self.assertEqual(15, payload['response']['included_rows'])
+        self.assertTrue(all(row['name'] == 'Starbucks' for row in data))
 
 
 if __name__ == '__main__':
