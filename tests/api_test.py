@@ -65,8 +65,8 @@ class FactualAPITestSuite(unittest.TestCase):
     def test_schema(self):
         schema = self.places.schema()
         self.assertEqual(21, len(schema['fields']))
-        self.assertTrue('title' in schema)
-        self.assertTrue('locality' in set(f['name'] for f in schema['fields']))
+        self.assertIn('title', schema)
+        self.assertIn('locality', set(f['name'] for f in schema['fields']))
 
     # full text search for things where locality equals 大阪市 (Osaka: test unicode)
     def test_unicode(self):
@@ -85,7 +85,7 @@ class FactualAPITestSuite(unittest.TestCase):
         self.assertIn(row['locality'], ["Santa Monica","Los Angeles","Culver City"])
 
     def test_and(self):
-        q = self.places.filters({"$and":[{"country":"US"},{"website":{"$blank":"false"}}]})
+        q = self.places.filters({"$and":[{"country":"US"},{"website":{"$blank":False}}]})
         row = q.data()[0]
         self.assertEqual('US', row['country'])
         self.assertRegexpMatches(row['website'], 'http')
