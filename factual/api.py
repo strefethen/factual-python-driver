@@ -7,9 +7,8 @@ from urllib import urlencode
 
 import requests
 from oauth_hook import OAuthHook
-from query import Crosswalk, Resolve, Table, Contribute, Facets
 
-
+from query import Crosswalk, Resolve, Table, Contribute, Facets, Flag
 
 API_V3_HOST = "http://api.v3.factual.com"
 DRIVER_VERSION_TAG = "factual-python-driver-1.0.0"
@@ -38,6 +37,9 @@ class Factual(object):
     def contribute(self, table, factual_id=None, values={}):
         return Contribute(self.api, table, factual_id, {'values': values})
 
+    def flag(self, table, factual_id):
+        return Flag(self.api, table, factual_id)
+
     def _generate_token(self, key, secret):
         access_token = OAuthHook(consumer_key=key, consumer_secret=secret, header_auth=True)
         return access_token
@@ -53,7 +55,7 @@ class API(object):
 
     def post(self, query):
         response = self._make_post_request(query.path, query.params)
-        return self._handle_response(response)
+        return response
         
     def schema(self, query):
         response = self._handle_request(query.path + '/schema', query.params)
@@ -61,7 +63,7 @@ class API(object):
 
     def raw_read(self, path, raw_params):
         url = self._build_base_url(path) + raw_params
-        return self._make_request(url)
+        return self._make_request(url).text
 
     def build_url(self, path, params):
         url = self._build_base_url(path) + self._make_query_string(params)
@@ -73,24 +75,24 @@ class API(object):
     def _handle_request(self, path, params):
         url = self.build_url(path, params)
         response = self._make_request(url)
-        return self._handle_response(response)
+        payload = json.loads(response.text)
+        if payload['status'] != 'ok':
+            raise APIException(response.status_code, payload)
+        return payload['response']
 
     def _make_request(self, url):
         headers = {'X-Factual-Lib': DRIVER_VERSION_TAG}
         response = self.client.get(url, headers=headers)
-        return response.text
+        return response
 
     def _make_post_request(self, path, params):
         url = self.build_url(path, params)
         headers = {'X-Factual-Lib': DRIVER_VERSION_TAG}
         response = self.client.post(url, headers=headers)
-        return response.text
-
-    def _handle_response(self, response):
-        payload = json.loads(response)
+        payload = json.loads(response.text)
         if payload['status'] != 'ok':
-            raise APIException(payload['error_type'] + ' - ' + payload['message'])
-        return payload['response']
+            raise APIException(response.status_code, payload)
+        return payload['response'] if 'response' in payload else payload
 
     def _make_query_string(self, params):
         string_params = []
@@ -101,4 +103,13 @@ class API(object):
 
 
 class APIException(Exception):
-    pass
+    def __init__(self, status_code, response):
+        self.status_code = status_code
+        self.response = response
+        Exception.__init__(self, response['error_type'] + ' - ' + response['message'])
+
+    def get_status_code(self):
+        return self.status_code
+
+    def get_response(self):
+        return self.response

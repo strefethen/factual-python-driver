@@ -7,15 +7,6 @@ class Contribute(Write):
     def values(self, values):
         return self._copy({'values': values})
 
-    def user(self, user):
-        return self._copy({'user': user})
-
-    def comment(self, comment):
-        return self._copy({'comment': comment})
-
-    def reference(self, reference):
-        return self._copy({'reference': reference})
-
     def _path(self):
         path = 't/' + self.table
         if self.factual_id:

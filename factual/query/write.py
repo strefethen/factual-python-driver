@@ -13,5 +13,17 @@ class Write(Base):
         self.factual_id = factual_id
         self.path = self._path()
 
+    def user(self, user):
+        return self._copy({'user': user})
+
+    def comment(self, comment):
+        return self._copy({'comment': comment})
+
+    def reference(self, reference):
+        return self._copy({'reference': reference})
+
     def _path(self):
+        pass
+
+    def _copy(self, params):
         pass
