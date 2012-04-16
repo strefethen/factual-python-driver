@@ -9,6 +9,7 @@ class FactualAPITestSuite(unittest.TestCase):
     def setUp(self):
         self.factual = Factual(KEY, SECRET)
         self.places = self.factual.table('places')
+        self.facets = self.factual.facets('global')
 
     def test_search(self):
         q = self.places.search('factual')
@@ -98,6 +99,24 @@ class FactualAPITestSuite(unittest.TestCase):
         self.assertEqual(15, payload['response']['included_rows'])
         self.assertTrue(all(row['name'] == 'Starbucks' for row in data))
 
+    def test_facets1(self):
+        q = self.facets.search("starbucks").select("country")
+        results = q.data()['country']
+        self.assertTrue(results['us'] > 5000)
+        self.assertTrue(results['ca'] > 200)
+
+    def test_facets2(self):
+        q = self.facets.search("starbucks").select("locality,region").filters({"country":"US"})
+        locality = q.data()['locality']
+        region = q.data()['region']
+        self.assertTrue(locality['chicago'] > 50)
+        self.assertTrue(region['tx'] > 200)
+
+    def test_facets_geo(self):
+        q = self.facets.select("category").geo(circle(34.06018, -118.41835, 5000))
+        category = q.data()['category']
+        self.assertTrue(category['shopping'] > 1000)
+        self.assertTrue(category['health & medicine > physicians'] > 1000)
 
 if __name__ == '__main__':
     unittest.main()

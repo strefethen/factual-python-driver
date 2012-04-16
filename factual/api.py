@@ -31,6 +31,9 @@ class Factual(object):
     def raw_read(self, path, raw_params):
         return self.api.raw_read(path, raw_params)
 
+    def facets(self, table):
+        return Table(self.api, 't/' + table + '/facets')
+
     def _generate_token(self, key, secret):
         access_token = OAuthHook(consumer_key=key, consumer_secret=secret, header_auth=True)
         return access_token

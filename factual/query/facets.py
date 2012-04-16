@@ -1,0 +1,31 @@
+"""
+Factual facets api query
+"""
+
+from base import Base
+
+class Facets(Base):
+    def __init__(self, api, path, params={}):
+        self.path = path
+        Base.__init__(self, api, params)
+
+    def search(self, terms):
+        return self._copy({'q': terms})
+
+    def filters(self, filters):
+        return self._copy({'filters': filters})
+
+    def include_count(self, include):
+        return self._copy({'include_count': include})
+
+    def geo(self, geo_filter):
+        return self._copy({'geo': geo_filter})
+
+    def limit(self, max_rows):
+        return self._copy({'limit': max_rows})
+
+    def select(self, fields):
+        return self._copy({'select': fields})
+
+    def _copy(self, params):
+        return Table(self.api, self.path, self.merge_params(params))
