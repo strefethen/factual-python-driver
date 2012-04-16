@@ -26,7 +26,7 @@ class Factual(object):
         return Crosswalk(self.api)
 
     def resolve(self, values):
-        return Resolve(self.api, values)
+        return Resolve(self.api, {'values': values})
 
     def raw_read(self, path, raw_params):
         return self.api.raw_read(path, raw_params)
