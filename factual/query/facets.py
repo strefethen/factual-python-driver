@@ -27,4 +27,4 @@ class Facets(Read):
         return self._copy({'select': fields})
 
     def _copy(self, params):
-        return Table(self.api, self.path, self.merge_params(params))
+        return Facets(self.api, self.path, self.merge_params(params))
