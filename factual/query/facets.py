@@ -2,12 +2,11 @@
 Factual facets api query
 """
 
-from base import Base
+from read import Read
 
-class Facets(Base):
+class Facets(Read):
     def __init__(self, api, path, params={}):
-        self.path = path
-        Base.__init__(self, api, params)
+        Read.__init__(self, api, path, params)
 
     def search(self, terms):
         return self._copy({'q': terms})

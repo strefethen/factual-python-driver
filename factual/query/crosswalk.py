@@ -1,9 +1,8 @@
-from base import Base
+from read import Read
 
-class Crosswalk(Base):
+class Crosswalk(Read):
     def __init__(self, api, params={}):
-        self.path = 'places/crosswalk'
-        Base.__init__(self, api, params)
+        Read.__init__(self, api, 'places/crosswalk', params)
 
     def factual_id(self, factual_id):
         return self._copy({'factual_id': factual_id})

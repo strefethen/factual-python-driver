@@ -1,9 +1,8 @@
-from base import Base
+from read import Read
 
-class Resolve(Base):
+class Resolve(Read):
     def __init__(self, api, values={}):
-        self.path = 'places/resolve'
-        Base.__init__(self, api, {'values': values})
+        Read.__init__(self, api, 'places/resolve', {'values': values})
 
     def values(self, values):
         return self._copy({'values': values})

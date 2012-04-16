@@ -43,9 +43,13 @@ class API(object):
     def __init__(self, access_token):
         self.client = requests.session(hooks={'pre_request': access_token})
 
-    def execute(self, query):
+    def get(self, query):
         response = self._handle_request(query.path, query.params)
         return response
+
+    def post(self, query):
+        response = self._make_post_request(query.path, query.params)
+        return self._handle_response(response)
         
     def schema(self, query):
         response = self._handle_request(query.path + '/schema', query.params)
@@ -65,15 +69,24 @@ class API(object):
     def _handle_request(self, path, params):
         url = self.build_url(path, params)
         response = self._make_request(url)
-        payload = json.loads(response)
-        if payload['status'] != 'ok':
-            raise APIException(payload['error_type'] + ' - ' + payload['message'])
-        return payload['response']
+        return self._handle_response(response)
 
     def _make_request(self, url):
         headers = {'X-Factual-Lib': DRIVER_VERSION_TAG}
         response = self.client.get(url, headers=headers)
         return response.text
+
+    def _make_post_request(self, path, params):
+        url = self.build_url(path, params)
+        headers = {'X-Factual-Lib': DRIVER_VERSION_TAG}
+        response = self.client.post(url, headers=headers)
+        return response.text
+
+    def _handle_response(self, response):
+        payload = json.loads(response)
+        if payload['status'] != 'ok':
+            raise APIException(payload['error_type'] + ' - ' + payload['message'])
+        return payload['response']
 
     def _make_query_string(self, params):
         string_params = []
