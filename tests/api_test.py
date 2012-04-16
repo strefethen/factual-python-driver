@@ -118,5 +118,11 @@ class FactualAPITestSuite(unittest.TestCase):
         self.assertTrue(category['shopping'] > 1000)
         self.assertTrue(category['health & medicine > physicians'] > 1000)
 
+    def test_contribute_without_id(self):
+        values = {'name': 'factual', 'locality': 'los angeles', 'address': '1801 Ave of the Stars'}
+        contribute = self.factual.contribute('global', values=values).user('python_driver_tester')
+        response = contribute.write()
+        self.assertFalse(response['new_entity'])
+
 if __name__ == '__main__':
     unittest.main()
