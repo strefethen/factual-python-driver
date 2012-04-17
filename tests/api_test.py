@@ -124,6 +124,12 @@ class FactualAPITestSuite(unittest.TestCase):
 #        response = contribute.write()
 #        self.assertFalse(response['new_entity'])
 #
+#    def test_contribute_with_id(self):
+#        values = {'name': 'Factual'}
+#        contribute = self.factual.contribute('global', factual_id='03c26917-5d66-4de9-96bc-b13066173c65', values=values).user('python_driver_tester')
+#        response = contribute.write()
+#        self.assertFalse(response['new_entity'])
+#
 #    def test_flag(self):
 #        flag = self.factual.flag('global', '03c26917-5d66-4de9-96bc-b13066173c65').user('python_driver_tester').other().debug(True)
 #        response = flag.write()
