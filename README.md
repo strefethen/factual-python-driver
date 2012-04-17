@@ -12,6 +12,9 @@ This API supports queries to Factual's Read, Schema, Crosswalk, and Resolve APIs
 
 This driver is supported via the [Factual Developer Group](https://groups.google.com/group/factual_developers)
 
+### Warning
+The driver also contains support for Contribute and Flag requests which are not yet available through the Factual public API.  These API features will be enabled in the near future.
+
 # Overview
 
 
