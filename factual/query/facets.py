@@ -17,6 +17,9 @@ class Facets(Read):
     def include_count(self, include):
         return self._copy({'include_count': include})
 
+    def min_count(self, min_count):
+        return self._copy({'min_count': min_count})
+
     def geo(self, geo_filter):
         return self._copy({'geo': geo_filter})
 
