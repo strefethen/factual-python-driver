@@ -171,14 +171,14 @@ query = query.offset("20")
     <td><tt>query = query.filters("name":{"$bw":"starbucks"})</tt></td>
   </tr>
   <tr>
-    <td>get total row count</td>
+    <td>include_count</td>
     <td>returns the total count of the number of rows in the dataset that conform to the query.</td>
-    <td><tt>query.include_count(True)</tt><tt>data().total_row_count()</tt></td>
+    <td><tt>query.include_count(True)</tt><br><tt>data().total_row_count()</tt></td>
   </tr>
   <tr>
     <td>geo</td>
     <td>Restrict data to be returned to be within a geographical range based.</td>
-    <td>(See the section on Geo Filters)</td>
+    <td><tt>query.geo({"$circle":{"$center":[34.06021, -118.41828], "$meters":5000}})</tt></td>
   </tr>
   <tr>
     <td>limit</td>
