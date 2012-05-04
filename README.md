@@ -13,7 +13,7 @@ This API supports queries to Factual's Read, Schema, Crosswalk, and Resolve APIs
 
 Full documentation is available at http://developer.factual.com
 
-This driver is supported via the [Factual Developer Group](https://groups.google.com/group/factual_developers)
+If you need additional support, please visit http://support.factual.com
 
 ### Warning
 The driver also contains support for Contribute and Flag requests which are not yet available through the Factual public API.  These API features will be enabled in the near future.
@@ -55,13 +55,14 @@ factual = Factual(KEY, SECRET)
 
 ## Unit Tests
 Unit Tests are provided to ensure the driver and OAuth are functioning as expected.  
+Add your Oauth credentials to tests/test_settings.py
 From the command line, run: python -m tests.api_test
 
 
 ## Simple Read Examples
 
 `````python
-# Return entities from the Places dataset with names beginning with "starbucks"
+# Return entities from the Places dataset where name equals "starbucks"
 factual.table("places").filters({"name":"starbucks"}).data()
 ````
 
@@ -86,14 +87,14 @@ factual.table("restaurants-us").filters(
 ## Simple Crosswalk Example
 
 ````python
-# Concordance information of a place
+# Get Crosswalk data using a Factual ID
 FACTUAL_ID = "110ace9f-80a7-47d3-9170-e9317624ebd9"
 query = factual.crosswalk().factual_id(FACTUAL_ID)
 query.data()
 ````
 
 ````python
-# Or specify a place with its namespace_id and namespace
+# Get Crosswalk data using a third party namespace and namespace_id
 SIMPLEGEO_ID = "SG_6XIEi3qehN44LH8m8i86v0"
 query = factual.crosswalk().namespace('simplegeo',SIMPLEGEO_ID)
 query.data()
@@ -104,8 +105,8 @@ query.data()
 ````python
 # Returns resolved entities
 query = factual.resolve({"name":"McDonalds","address":"10451 Santa Monica Blvd","region":"CA","postcode":"90025"})
-query.data()[1]["resolved"]  # true or false
 query.data()
+query.data()[1]["resolved"]  # true or false
 ````
 
 ## Simple Facets Example
@@ -172,7 +173,7 @@ query = query.offset("20")
   <tr>
     <td>get total row count</td>
     <td>returns the total count of the number of rows in the dataset that conform to the query.</td>
-    <td><tt>query.total_count</tt></td>
+    <td><tt>query.include_count(True)<tt>data().total_row_count()</tt></tt></td>
   </tr>
   <tr>
     <td>geo</td>
