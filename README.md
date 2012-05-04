@@ -9,6 +9,9 @@ This API supports queries to Factual's Read, Schema, Crosswalk, and Resolve APIs
 *   [Schema](http://developer.factual.com/display/docs/Core+API+-+Schema): Get table metadata
 *   [Crosswalk](http://developer.factual.com/display/docs/Places+API+-+Crosswalk): Get third-party IDs
 *   [Resolve](http://developer.factual.com/display/docs/Places+API+-+Resolve): Enrich your data and match it against Factual's
+*   [Facets](http://developer.factual.com/display/docs/Core+API+-+Facets): Get counts of data by facet
+
+Full documentation is available at http://developer.factual.com
 
 This driver is supported via the [Factual Developer Group](https://groups.google.com/group/factual_developers)
 
@@ -36,6 +39,7 @@ The Factual API is a generic API that sits over all tables available via the Fac
 *   Table <tt>global</tt> for international places
 *   Table <tt>restaurants-us</tt> for US restaurants only
 *   Table <tt>places</tt> for US places only
+*   Table <tt>products-cpg</tt> for consumer products
 
 ## Setup
 Obtain an OAuth key and secret from [Factual](http://www.factual.com/devtools/beta)
@@ -49,18 +53,27 @@ from factual import *
 factual = Factual(KEY, SECRET)
 ````
 
+## Unit Tests
+Unit Tests are provided to ensure the driver and OAuth are functioning as expected.  
+From the command line, run: python -m tests.api_test
+
 
 ## Simple Read Examples
 
 `````python
 # Return entities from the Places dataset with names beginning with "starbucks"
-factual.table("places").filters({"name":{"$bw":"starbucks"}}).data()
+factual.table("places").filters({"name":"starbucks"}).data()
+````
+
+`````python
+# Full text search for "sushi santa monica"
+factual.table("places").search("sushi santa monica").data()
 ````
 
 `````python
 # Return entity names and non-blank websites from the Global dataset, for entities located in Thailand
 factual.table("global").select("name,website").filters(
-	{"$and":[{"country":"TH"}, {"website":{"$blank":"false"}}]}).data()
+	{"country":"TH","website":{"$blank":False}}).data()
 ````
 
 `````python
@@ -89,12 +102,247 @@ query.data()
 ## Simple Resolve Example
 
 ````python
-# Returns resolved entities as an array of hashes
+# Returns resolved entities
 query = factual.resolve({"name":"McDonalds","address":"10451 Santa Monica Blvd","region":"CA","postcode":"90025"})
 query.data()[1]["resolved"]  # true or false
 query.data()
 ````
 
+## Simple Facets Example
+
+````python
+# Count the number of Starbucks per country
+query = factual.facets("global").search("starbucks").select("country")
+query.data()
+````
+
+
+## More Read Examples
+
+````python
+# 1. Specify the table Global
+query = factual.table("global")
+````
+
+````python
+# 2. Filter results in country US
+query = query.filters("country":"US")
+````
+
+````python
+# 3. Search for "sushi" or "sashimi"
+query = query.search("sushi", "sashimi")
+````
+
+````python
+# 4. Filter by geolocation
+query = query.geo({"$circle":{"$center":[34.06021, -118.41828], "$meters":5000}})
+````
+
+````python
+# 5. Sorting
+query = query.sort("name:asc")       # ascending 
+query = query.sort("name:desc")      # descending
+````
+
+````python
+# 6. Paging
+query = query.offset("20")
+````
+
+
+# Read API
+
+## All Top Level Query Parameters
+
+<table>
+  <col width="33%"/>
+  <col width="33%"/>
+  <col width="33%"/>
+  <tr>
+    <th>Parameter</th>
+    <th>Description</th>
+    <th>Example</th>
+  </tr>
+  <tr>
+    <td>filters</td>
+    <td>Restrict the data returned to conform to specific conditions.</td>
+    <td><tt>query = query.filters("name":{"$bw":"starbucks"})</tt></td>
+  </tr>
+  <tr>
+    <td>get total row count</td>
+    <td>returns the total count of the number of rows in the dataset that conform to the query.</td>
+    <td><tt>query.total_count</tt></td>
+  </tr>
+  <tr>
+    <td>geo</td>
+    <td>Restrict data to be returned to be within a geographical range based.</td>
+    <td>(See the section on Geo Filters)</td>
+  </tr>
+  <tr>
+    <td>limit</td>
+    <td>Limit the results</td>
+    <td><tt>query = query.limit(12)</tt></td>
+  </tr>
+  <tr>
+    <td>page</td>
+    <td>Limit the results to a specific "page".</td>
+    <td><tt>query = query.page(2, :per:10)</tt></td>
+  </tr>
+  <tr>
+    <td>search (across entity)</td>
+    <td>Full text search across entity</td>
+    <td>
+      Find "sushi":<br><tt>query = query.search("sushi")</tt><p>
+      Find "sushi" or "sashimi":<br><tt>query = query.search("sushi", "sashimi")</tt><p>
+      Find "sushi" and "santa" and "monica":<br><tt>query.search("sushi santa monica")</tt>
+    </td>
+  </tr>
+  <tr>
+    <td>search (across field)</td>
+    <td>Full text search on specific field</td>
+    <td><tt>query = query.filters({"name":{"$search":"cafe"}})</tt></td>
+  </tr>
+  <tr>
+    <td>select</td>
+    <td>Specifiy which fields to include in the query results.  Note that the order of fields will not necessarily be preserved in the resulting response due to the nature Hashes.</td>
+    <td><tt>query = query.select("name,address,locality,region")</tt></td>
+  </tr>
+  <tr>
+    <td>sort</td>
+    <td>The field (or fields) to sort data on, as well as the direction of sort.<p>
+        Sorts ascending by default, but supports both explicitly sorting ascending and descending, by using <tt>sort_asc</tt> or <tt>sort_desc</tt>.
+        Supports $distance as a sort option if a geo-filter is specified.<p>
+        Supports $relevance as a sort option if a full text search is specified either using the q parameter or using the $search operator in the filter parameter.<p>
+        By default, any query with a full text search will be sorted by relevance.<p>
+        Any query with a geo filter will be sorted by distance from the reference point.  If both a geo filter and full text search are present, the default will be relevance followed by distance.</td>
+    <td><tt>query = query.sort("name:asc")</tt><br>
+    <tt>query = query.sort("$distance:asc")</tt>
+    <tt>query = query.sort("$distance:asc,name:desc")</tt></td>
+  </tr>
+</table>
+
+## Row Filters
+
+The driver supports various row filter logic. For example:
+
+`````python
+# Returns records from the Places dataset with names beginning with "starbucks"
+factual.table("places").filters("name":{"$bw":"starbucks"}).data()
+````
+
+### Supported row filter logic
+
+<table>
+  <tr>
+    <th>Predicate</th>
+    <th width="25%">Description</th>
+    <th>Example</th>
+  </tr>
+  <tr>
+    <td>$eq</td>
+    <td>equal to</td>
+    <td><tt>query = query.filters("region":{"$eq":"CA"})</tt></td>
+  </tr>
+  <tr>
+    <td>$neq</td>
+    <td>not equal to</td>
+    <td><tt>query = query.filters("region":{"$neq":"CA"})</tt></td>
+  </tr>
+  <tr>
+    <td>search</td>
+    <td>full text search</td>
+    <td><tt>query = query.search("sushi")</tt></td>
+  </tr>
+  <tr>
+    <td>$in</td>
+    <td>equals any of</td>
+    <td><tt>query = query.filters("region":{"$in":["CA", "NM", "NY"]})</tt></td>
+  </tr>
+  <tr>
+    <td>$nin</td>
+    <td>does not equal any of</td>
+    <td><tt>query = query.filters("region":{"$nin":["CA", "NM", "NY"]})</tt></td>
+  </tr>
+  <tr>
+    <td>$bw</td>
+    <td>begins with</td>
+    <td><tt>query = query.filters("name":{"$bw":"starbucks"})</tt></td>
+  </tr>
+  <tr>
+    <td>$nbw</td>
+    <td>does not begin with</td>
+    <td><tt>query = query.filters("name":{"$nbw":"starbucks"})</tt></td>
+  </tr>
+  <tr>
+    <td>$bwin</td>
+    <td>begins with any of</td>
+    <td><tt>query = query.filters("name":{"$bwin":["starbucks", "coffee", "tea"]})</tt></td>
+  </tr>
+  <tr>
+    <td>$nbwin</td>
+    <td>does not begin with any of</td>
+    <td><tt>query = query.filters("name":{"$nbwin":["starbucks", "coffee", "tea"]})</tt></td>
+  </tr>
+  <tr>
+    <td>$blank</td>
+    <td>test to see if a value is (or is not) blank or null</td>
+    <td><tt>query = query.filters("tel":{"$blank":true})</tt><br>
+        <tt>query = query.filters("website":{"$blank":false})</tt></td>
+  </tr>
+  <tr>
+    <td>$gt</td>
+    <td>greater than</td>
+    <td><tt>query = query.filters("rating":{"$gt":7.5})</tt></td>
+  </tr>
+  <tr>
+    <td>$gte</td>
+    <td>greater than or equal</td>
+    <td><tt>query = query.filters("rating":{"$gte":7.5})</tt></td>
+  </tr>
+  <tr>
+    <td>$lt</td>
+    <td>less than</td>
+    <td><tt>query = query.filters("rating":{"$lt":7.5})</tt></td>
+  </tr>
+  <tr>
+    <td>$lte</td>
+    <td>less than or equal</td>
+    <td><tt>query = query.filters("rating":{"$lte":7.5})</tt></td>
+  </tr>
+</table>
+
+### AND
+
+Filters can be logically AND'd together. For example:
+
+````python
+# name begins with "coffee" AND tel is not blank
+query = query.filters({ "$and":[{"name":{"$bw":"coffee"}}, {"tel":{"$blank":false}}] })
+````
+
+### OR
+
+Filters can be logically OR'd. For example:
+
+````python
+# name begins with "coffee" OR tel is not blank
+query = query.filters({ "$or":[{"name":{"$bw":"coffee"}}, {"tel":{"$blank":false}}] })
+````
+
+### Combined ANDs and ORs
+
+You can nest AND and OR logic to whatever level of complexity you need. For example:
+
+````python
+# (name begins with "Starbucks") OR (name begins with "Coffee")
+# OR
+# (name full text search matches on "tea" AND tel is not blank)
+query = query.filters({ "$or":[ {"$or":[ {"name":{"$bw":"starbucks"}},
+                                               {"name":{"$bw":"coffee"}}]},
+                                   {"$and":[ {"name":{"$search":"tea"}},
+                                                {"tel":{"$blank":false}} ]} ]})
+````
 
 ## Full Documentation
 Full documentation is available at http://developer.factual.com
