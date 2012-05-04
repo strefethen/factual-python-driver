@@ -173,7 +173,7 @@ query = query.offset("20")
   <tr>
     <td>get total row count</td>
     <td>returns the total count of the number of rows in the dataset that conform to the query.</td>
-    <td><tt>query.include_count(True)<tt>data().total_row_count()</tt></tt></td>
+    <td><tt>query.include_count(True)</tt><tt>data().total_row_count()</tt></td>
   </tr>
   <tr>
     <td>geo</td>
