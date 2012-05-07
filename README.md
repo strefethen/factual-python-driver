@@ -49,7 +49,18 @@ example.py is provided with the driver as a reference.
 
 The driver allows you to create an authenticated handle to Factual. With a Factual handle, you can send queries and get results back.
 
-Queries are created using the Factual handle, which provides a fluent interface to constructing your queries.
+Queries are created using the Factual handle, which provides a fluent interface to constructing your queries.  One thing to be aware of is the behavior of the query modifier functions.  These return new query instances, so base queries can be set up and then modified in different ways to produce new queries.
+
+```python
+# Create a base search query
+q = factual.table("places").search("sushi")
+
+# Use this query with a filter
+filter_query = q.filters({"website":{"$blank":False}})
+
+# Use the same base query with select parameters (will not have website filter applied)
+select_name = q.select("name")
+```
 
 ## Tables
 The Factual API is a generic API that sits over all tables available via the Factual v3 API. Some popular ones:
