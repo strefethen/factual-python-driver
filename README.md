@@ -21,6 +21,24 @@ The driver also contains support for Contribute and Flag requests which are not 
 # Overview
 
 
+## Setup
+The easiest way to get started with the driver is to install it from the Python Package Index.
+
+```shell
+pip install factual-api
+```
+
+Obtain an OAuth key and secret from [Factual](http://www.factual.com/devtools/beta).
+
+To use the driver in a python program, just create a Factual object using your OAuth key and secret.
+
+```python
+from factual import Factual
+factual = Factual(KEY, SECRET)
+```
+
+example.py is provided with the driver as a reference.
+
 ## Dependencies
 [Requests](http://docs.python-requests.org/en/v0.10.7/index.html)
 
@@ -41,18 +59,6 @@ The Factual API is a generic API that sits over all tables available via the Fac
 *   Table <tt>places</tt> for US places only
 *   Table <tt>products-cpg</tt> for consumer products
 
-## Setup
-Obtain an OAuth key and secret from [Factual](http://www.factual.com/devtools/beta)
-
-example.py is provided with the driver as a reference.
-
-To get started, import the Factual python driver module and create a Factual object using your OAuth key and secret.
-
-````python
-from factual import *
-factual = Factual(KEY, SECRET)
-````
-
 ## Unit Tests
 Unit Tests are provided to ensure the driver and OAuth are functioning as expected.  
 Add your Oauth credentials to tests/test_settings.py
@@ -61,95 +67,95 @@ From the command line, run: python -m tests.api_test
 
 ## Simple Read Examples
 
-`````python
+```python
 # Return entities from the Places dataset where name equals "starbucks"
 factual.table("places").filters({"name":"starbucks"}).data()
-````
+```
 
-`````python
+```python
 # Full text search for "sushi santa monica"
 factual.table("places").search("sushi santa monica").data()
-````
+```
 
-`````python
+```python
 # Return entity names and non-blank websites from the Global dataset, for entities located in Thailand
 factual.table("global").select("name,website").filters(
 	{"country":"TH","website":{"$blank":False}}).data()
-````
+```
 
-`````python
+```python
 # Return highly rated U.S. restaurants in Los Angeles with WiFi
 factual.table("restaurants-us").filters(
   {"$and":[{"locality":"los angeles"},{"rating":{"$gte":4}},{"wifi":"true"}]}).data()
-````
+```
 
 
 ## Simple Crosswalk Example
 
-````python
+```python
 # Get Crosswalk data using a Factual ID
 FACTUAL_ID = "110ace9f-80a7-47d3-9170-e9317624ebd9"
 query = factual.crosswalk().factual_id(FACTUAL_ID)
 query.data()
-````
+```
 
-````python
+```python
 # Get Crosswalk data using a third party namespace and namespace_id
 SIMPLEGEO_ID = "SG_6XIEi3qehN44LH8m8i86v0"
 query = factual.crosswalk().namespace('simplegeo',SIMPLEGEO_ID)
 query.data()
-````
+```
 
 ## Simple Resolve Example
 
-````python
+```python
 # Returns resolved entities
 query = factual.resolve({"name":"McDonalds","address":"10451 Santa Monica Blvd","region":"CA","postcode":"90025"})
 query.data()
 query.data()[1]["resolved"]  # true or false
-````
+```
 
 ## Simple Facets Example
 
-````python
+```python
 # Count the number of Starbucks per country
 query = factual.facets("global").search("starbucks").select("country")
 query.data()
-````
+```
 
 
 ## More Read Examples
 
-````python
+```python
 # 1. Specify the table Global
 query = factual.table("global")
-````
+```
 
-````python
+```python
 # 2. Filter results in country US
 query = query.filters("country":"US")
-````
+```
 
-````python
+```python
 # 3. Search for "sushi" or "sashimi"
 query = query.search("sushi", "sashimi")
-````
+```
 
-````python
+```python
 # 4. Filter by geolocation
 query = query.geo({"$circle":{"$center":[34.06021, -118.41828], "$meters":5000}})
-````
+```
 
-````python
+```python
 # 5. Sorting
 query = query.sort("name:asc")       # ascending 
 query = query.sort("name:desc")      # descending
-````
+```
 
-````python
+```python
 # 6. Paging
 query = query.offset("20")
-````
+```
 
 
 # Read API
@@ -227,10 +233,10 @@ query = query.offset("20")
 
 The driver supports various row filter logic. For example:
 
-`````python
+```python
 # Returns records from the Places dataset with names beginning with "starbucks"
 factual.table("places").filters("name":{"$bw":"starbucks"}).data()
-````
+```
 
 ### Supported row filter logic
 
@@ -317,25 +323,25 @@ factual.table("places").filters("name":{"$bw":"starbucks"}).data()
 
 Filters can be logically AND'd together. For example:
 
-````python
+```python
 # name begins with "coffee" AND tel is not blank
 query = query.filters({ "$and":[{"name":{"$bw":"coffee"}}, {"tel":{"$blank":false}}] })
-````
+```
 
 ### OR
 
 Filters can be logically OR'd. For example:
 
-````python
+```python
 # name begins with "coffee" OR tel is not blank
 query = query.filters({ "$or":[{"name":{"$bw":"coffee"}}, {"tel":{"$blank":false}}] })
-````
+```
 
 ### Combined ANDs and ORs
 
 You can nest AND and OR logic to whatever level of complexity you need. For example:
 
-````python
+```python
 # (name begins with "Starbucks") OR (name begins with "Coffee")
 # OR
 # (name full text search matches on "tea" AND tel is not blank)
@@ -343,7 +349,7 @@ query = query.filters({ "$or":[ {"$or":[ {"name":{"$bw":"starbucks"}},
                                                {"name":{"$bw":"coffee"}}]},
                                    {"$and":[ {"name":{"$search":"tea"}},
                                                 {"tel":{"$blank":false}} ]} ]})
-````
+```
 
 ## Full Documentation
 Full documentation is available at http://developer.factual.com
