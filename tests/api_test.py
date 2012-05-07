@@ -118,16 +118,16 @@ class FactualAPITestSuite(unittest.TestCase):
         self.assertTrue(category['shopping'] > 1000)
         self.assertTrue(category['health & medicine > physicians'] > 1000)
 
-#    def test_contribute_without_id(self):
+#    def test_submit_without_id(self):
 #        values = {'name': 'factual', 'locality': 'los angeles', 'address': '1801 Ave of the Stars'}
-#        contribute = self.factual.contribute('global', values=values).user('python_driver_tester')
-#        response = contribute.write()
+#        submit = self.factual.submit('global', values=values).user('python_driver_tester')
+#        response = submit.write()
 #        self.assertFalse(response['new_entity'])
 #
-#    def test_contribute_with_id(self):
+#    def test_submit_with_id(self):
 #        values = {'name': 'Factual'}
-#        contribute = self.factual.contribute('global', factual_id='03c26917-5d66-4de9-96bc-b13066173c65', values=values).user('python_driver_tester')
-#        response = contribute.write()
+#        submit = self.factual.submit('global', factual_id='03c26917-5d66-4de9-96bc-b13066173c65', values=values).user('python_driver_tester')
+#        response = submit.write()
 #        self.assertFalse(response['new_entity'])
 #
 #    def test_flag(self):

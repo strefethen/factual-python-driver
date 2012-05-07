@@ -8,7 +8,7 @@ from urllib import urlencode
 import requests
 from oauth_hook import OAuthHook
 
-from query import Crosswalk, Resolve, Table, Contribute, Facets, Flag
+from query import Crosswalk, Resolve, Table, Submit, Facets, Flag
 
 API_V3_HOST = "http://api.v3.factual.com"
 DRIVER_VERSION_TAG = "factual-python-driver-1.1.1"
@@ -34,8 +34,8 @@ class Factual(object):
     def facets(self, table):
         return Facets(self.api, 't/' + table + '/facets')
 
-    def contribute(self, table, factual_id=None, values={}):
-        return Contribute(self.api, table, factual_id, {'values': values})
+    def submit(self, table, factual_id=None, values={}):
+        return Submit(self.api, table, factual_id, {'values': values})
 
     def flag(self, table, factual_id):
         return Flag(self.api, table, factual_id)

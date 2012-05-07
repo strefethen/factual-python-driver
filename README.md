@@ -16,7 +16,7 @@ Full documentation is available at http://developer.factual.com
 If you need additional support, please visit http://support.factual.com
 
 ### Warning
-The driver also contains support for Contribute and Flag requests which are not yet available through the Factual public API.  These API features will be enabled in the near future.
+The driver also contains support for Submit and Flag requests which are not yet available through the Factual public API.  These API features will be enabled in the near future.
 
 # Overview
 

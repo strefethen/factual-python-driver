@@ -1,6 +1,6 @@
 from write import Write
 
-class Contribute(Write):
+class Submit(Write):
     def __init__(self, api, table, factual_id, params={}):
         Write.__init__(self, api, table, factual_id, params)
 
@@ -11,8 +11,8 @@ class Contribute(Write):
         path = 't/' + self.table
         if self.factual_id:
             path += '/' + self.factual_id
-        path += '/contribute'
+        path += '/submit'
         return path
 
     def _copy(self, params):
-        return Contribute(self.api, self.table, self.factual_id, self.merge_params(params))
+        return Submit(self.api, self.table, self.factual_id, self.merge_params(params))
