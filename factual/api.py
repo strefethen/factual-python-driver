@@ -101,12 +101,12 @@ class API(object):
             string_params.append((key, transformed))
         return urlencode(string_params)
 
-
 class APIException(Exception):
     def __init__(self, status_code, response):
         self.status_code = status_code
         self.response = response
-        Exception.__init__(self, response['error_type'] + ' - ' + response['message'])
+        exception = {'http_status_code':status_code,'response':response}
+        Exception.__init__(self, exception)
 
     def get_status_code(self):
         return self.status_code
