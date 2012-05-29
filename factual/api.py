@@ -62,7 +62,11 @@ class API(object):
         return response['view']
 
     def raw_read(self, path, raw_params):
-        url = self._build_base_url(path) + raw_params
+        url = self._build_base_url(path)
+        if isinstance(raw_params, str):
+            url += raw_params
+        else:
+            url += self._make_query_string(raw_params)
         return self._make_request(url).text
 
     def build_url(self, path, params):

@@ -362,7 +362,18 @@ query = query.filters({ "$or":[ {"$or":[ {"name":{"$bw":"starbucks"}},
                                                 {"tel":{"$blank":false}} ]} ]})
 ```
 
-## Full Documentation
+## Raw Read
+The raw read feature allows you to perform arbitrary read queries against the Factual API.  This includes API features which may not have explicit driver support yet.  Raw read can be used with either a URL-encoded query string or parameter dict.  For example:
+
+```python
+# url-encoded query string
+response = factual.raw_read('t/places/read', 'limit=15&filters=%7B%22name%22%3A%22Starbucks%22%7D')
+# parameters in a dict
+response = factual.raw_read('t/places/read', {'limit':15,'filters':{"name":"Starbucks"}})
+```
+
+# Full Documentation
+
 Full documentation is available at http://developer.factual.com
 
 # Where to Get Help
