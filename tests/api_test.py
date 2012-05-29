@@ -99,6 +99,13 @@ class FactualAPITestSuite(unittest.TestCase):
         self.assertEqual(15, payload['response']['included_rows'])
         self.assertTrue(all(row['name'] == 'Starbucks' for row in data))
 
+    def test_raw_read_with_map(self):
+        response = self.factual.raw_read('t/places/read', {'limit':15,'filters':{"name":"Starbucks"}})
+        payload = json.loads(response)
+        data = payload['response']['data']
+        self.assertEqual(15, payload['response']['included_rows'])
+        self.assertTrue(all(row['name'] == 'Starbucks' for row in data))
+
     def test_facets1(self):
         q = self.facets.search("starbucks").select("country")
         results = q.data()['country']
