@@ -8,7 +8,7 @@ from urllib import urlencode
 import requests
 from oauth_hook import OAuthHook
 
-from query import Crosswalk, Resolve, Table, Submit, Facets, Flag
+from query import Crosswalk, Resolve, Table, Submit, Facets, Flag, Geopulse
 
 API_V3_HOST = "http://api.v3.factual.com"
 DRIVER_VERSION_TAG = "factual-python-driver-1.1.2"
@@ -39,6 +39,9 @@ class Factual(object):
 
     def flag(self, table, factual_id):
         return Flag(self.api, table, factual_id)
+
+    def geopulse(self, point={}):
+        return Geopulse(self.api, 'places/geopulse', {'geo': point})
 
     def _generate_token(self, key, secret):
         access_token = OAuthHook(consumer_key=key, consumer_secret=secret, header_auth=True)

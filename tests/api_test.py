@@ -2,7 +2,7 @@ import json
 import unittest
 
 from factual import Factual
-from factual.utils import circle
+from factual.utils import circle, point
 from test_settings import KEY, SECRET
 
 class FactualAPITestSuite(unittest.TestCase):
@@ -124,6 +124,16 @@ class FactualAPITestSuite(unittest.TestCase):
         category = q.data()['category']
         self.assertTrue(category['shopping'] > 1000)
         self.assertTrue(category['health & medicine > physicians'] > 1000)
+
+    def test_geopulse(self):
+        geopulse = self.factual.geopulse(point(34.06021, -118.41828))
+        income_only = geopulse.select('income')
+        all_results = geopulse.data()[0]
+        income_results = income_only.data()[0]
+        self.assertIn('commercial_density', all_results)
+        self.assertTrue(0 <= all_results['commercial_density'] <= 1)
+        self.assertEqual(1, len(income_results))
+        self.assertIn('income', income_results)
 
 #    def test_submit_without_id(self):
 #        values = {'name': 'factual', 'locality': 'los angeles', 'address': '1801 Ave of the Stars'}

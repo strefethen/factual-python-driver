@@ -1,4 +1,5 @@
 ## Unreleased
 
  * added changelog
- * add parameter dict support to raw_read
+ * added parameter dict support to raw_read
+ * added geopulse feature
