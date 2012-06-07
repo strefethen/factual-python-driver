@@ -46,6 +46,9 @@ class Factual(object):
     def geocode(self, point):
         return Geocode(self.api, 'places/geocode', {'geo': point})
 
+    def monetize(self):
+        return Table(self.api, 'places/monetize')
+
     def _generate_token(self, key, secret):
         access_token = OAuthHook(consumer_key=key, consumer_secret=secret, header_auth=True)
         return access_token
