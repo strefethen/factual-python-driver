@@ -75,6 +75,8 @@ Unit Tests are provided to ensure the driver and OAuth are functioning as expect
 Add your Oauth credentials to tests/test_settings.py
 From the command line, run: python -m tests.api_test
 
+## URL Encoding
+The Python driver handles URL encoding, therefore all parameters passed to the driver should be in their un-encoded form. 
 
 ## Simple Read Examples
 
@@ -89,6 +91,11 @@ factual.table("places").search("sushi santa monica").data()
 ```
 
 ```python
+# Filter based on category"
+factual.table("places").filters({"category":"Food & Beverage > Restaurants > Italian"}).data()
+```
+
+```python
 # Return entity names and non-blank websites from the Global dataset, for entities located in Thailand
 factual.table("global").select("name,website").filters(
 	{"country":"TH","website":{"$blank":False}}).data()
@@ -99,7 +106,6 @@ factual.table("global").select("name,website").filters(
 factual.table("restaurants-us").filters(
   {"$and":[{"locality":"los angeles"},{"rating":{"$gte":4}},{"wifi":"true"}]}).data()
 ```
-
 
 ## Simple Crosswalk Example
 
@@ -133,6 +139,7 @@ query.data()[1]["resolved"]  # true or false
 query = factual.facets("global").search("starbucks").select("country")
 query.data()
 ```
+
 
 
 ## More Read Examples

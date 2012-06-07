@@ -87,7 +87,7 @@ class API(object):
         response = self._make_request(url)
         payload = json.loads(response.text)
         if payload['status'] != 'ok':
-            raise APIException(response.status_code, payload)
+            raise APIException(response.status_code, payload, url)
         return payload['response']
 
     def _make_request(self, url):
@@ -101,7 +101,7 @@ class API(object):
         response = self.client.post(url, headers=headers)
         payload = json.loads(response.text)
         if payload['status'] != 'ok':
-            raise APIException(response.status_code, payload)
+            raise APIException(response.status_code, payload, url)
         return payload['response'] if 'response' in payload else payload
 
     def _make_query_string(self, params):
@@ -112,10 +112,11 @@ class API(object):
         return urlencode(string_params)
 
 class APIException(Exception):
-    def __init__(self, status_code, response):
+    def __init__(self, status_code, response, url):
         self.status_code = status_code
         self.response = response
-        exception = {'http_status_code':status_code,'response':response}
+        self.url = url
+        exception = {'http_status_code':status_code,'response':response, 'url':url}
         Exception.__init__(self, exception)
 
     def get_status_code(self):
