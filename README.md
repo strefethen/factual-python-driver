@@ -156,7 +156,7 @@ query = query.filters("country":"US")
 
 ```python
 # 3. Search for "sushi" or "sashimi"
-query = query.search("sushi", "sashimi")
+query = query.search("sushi, sashimi")
 ```
 
 ```python
