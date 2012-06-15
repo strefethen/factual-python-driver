@@ -2,11 +2,12 @@
 Factual API driver
 """
 
+from google.appengine.api import urlfetch
 import json
 from urllib import urlencode
 
-import requests
-from oauth_hook import OAuthHook
+import oauth
+from urlparse import urlparse, parse_qsl
 
 from query import Crosswalk, Resolve, Table, Submit, Facets, Flag
 
@@ -41,13 +42,13 @@ class Factual(object):
         return Flag(self.api, table, factual_id)
 
     def _generate_token(self, key, secret):
-        access_token = OAuthHook(consumer_key=key, consumer_secret=secret, header_auth=True)
+        access_token = oauth.OAuthConsumer(key, secret)
         return access_token
 
 
 class API(object):
     def __init__(self, access_token):
-        self.client = requests.session(hooks={'pre_request': access_token})
+        self.access_token = access_token
 
     def get(self, query):
         response = self._handle_request(query.path, query.params)
@@ -75,15 +76,23 @@ class API(object):
     def _handle_request(self, path, params):
         url = self.build_url(path, params)
         response = self._make_request(url)
-        payload = json.loads(response.text)
+        payload = json.loads(response.content)
         if payload['status'] != 'ok':
             raise APIException(response.status_code, payload, url)
         return payload['response']
 
-    def _make_request(self, url):
-        headers = {'X-Factual-Lib': DRIVER_VERSION_TAG}
-        response = self.client.get(url, headers=headers)
-        return response
+    def _make_request(self, url, deadline=7):
+        #headers = {'X-Factual-Lib': DRIVER_VERSION_TAG}
+        params    = parse_qsl(urlparse(url).query)
+        request   = oauth.OAuthRequest.from_consumer_and_token(self.access_token, http_method='GET', http_url=url, parameters=params)
+
+        res = urlfetch.fetch(url=url,
+                             method=urlfetch.GET,
+                             headers=request.to_header(),
+                             deadline=deadline)
+        return res
+        #response = self.client.get(url, headers=headers)
+        #return response
 
     def _make_post_request(self, path, params):
         url = self.build_url(path, params)
